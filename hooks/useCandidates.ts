@@ -127,10 +127,23 @@ export function useCandidates(): UseCandidatesReturn {
     []
   );
 
-  // Initial load
+  // Initial load - clear all data first to ensure fresh start on page refresh
   useEffect(() => {
-    refreshCandidates();
-  }, [refreshCandidates]);
+    const initializeData = async () => {
+      try {
+        // Clear all existing data first
+        await performAction("reset");
+        // Then refresh to get clean state
+        await refreshCandidates();
+      } catch (error) {
+        console.error("Failed to initialize data:", error);
+        // Fallback to just refresh if reset fails
+        await refreshCandidates();
+      }
+    };
+
+    initializeData();
+  }, [refreshCandidates, performAction]);
 
   return {
     candidates,
