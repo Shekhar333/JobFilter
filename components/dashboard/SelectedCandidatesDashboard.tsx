@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Candidate } from "@/types/candidate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Alert } from "@/components/ui/alert";
 import {
   Users,
   Trophy,
@@ -14,6 +15,8 @@ import {
   Award,
   Eye,
   X,
+  Mail,
+  Info,
 } from "lucide-react";
 import { calculateCandidateScore } from "@/lib/utils";
 
@@ -30,6 +33,7 @@ export function SelectedCandidatesDashboard({
   onUnselectCandidate,
   onClearAllSelections,
 }: SelectedCandidatesDashboardProps) {
+  const [showProcessAlert, setShowProcessAlert] = useState(false);
   const totalSelected = selectedCandidates.length;
   const averageScore =
     selectedCandidates.length > 0
@@ -78,6 +82,14 @@ export function SelectedCandidatesDashboard({
     return acc;
   }, {} as Record<string, number>);
 
+  const handleSendMail = (candidateName: string) => {
+    setShowProcessAlert(true);
+    // Auto-hide alert after 3 seconds
+    setTimeout(() => {
+      setShowProcessAlert(false);
+    }, 3000);
+  };
+
   if (totalSelected === 0) {
     return (
       <Card>
@@ -98,6 +110,19 @@ export function SelectedCandidatesDashboard({
 
   return (
     <div className="space-y-6">
+      {showProcessAlert && (
+        <Alert>
+          <Info className="h-4 w-4" />
+          <div>
+            <div className="font-medium">Functionality Under Process</div>
+            <div className="text-sm text-muted-foreground">
+              Email functionality is currently being developed. Stay tuned for
+              updates!
+            </div>
+          </div>
+        </Alert>
+      )}
+
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Selected Candidates Dashboard</h2>
         <div className="flex items-center gap-2">
@@ -212,6 +237,14 @@ export function SelectedCandidatesDashboard({
                   </div>
 
                   <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSendMail(candidate.name)}
+                      className="text-blue-600 hover:text-blue-700"
+                    >
+                      <Mail className="h-4 w-4" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
